@@ -1,0 +1,36 @@
+{
+	"name": "Floatplane",
+	"description": "A content creation and video streaming website created by Floatplane Media Inc. and Linus Media Group.",
+	"author": "VoxelPrismatic",
+	"authorUrl": "https://github.com/voxelprismatic",
+
+	"platformUrl": "https://floatplane.com",
+	"sourceUrl": "https://voxelprismatic.github.io/grayjay-floatplane/FloatplaneConfig.json",
+	"repositoryUrl": "https://voxelprismatic.github.io/grayjay-floatplane/",
+	"scriptUrl": "./FloatplaneScript.js",
+	"version": 1,
+
+	"iconUrl": "./floatplane.png",
+	"id": "d8643244-633f-4c71-9f45-215b2387dc2c",
+
+	"scriptSignature": "",
+	"scriptPublicKey": "",
+	"packages": ["Http"],
+
+	"allowEval": false,
+	"allowUrls": [
+		"www.floatplane.com",
+		"floatplane.com"
+	],
+
+	"supportedClaimTypes": [1],
+
+    "authentication": {
+        "loginUrl": "https://www.floatplane.com/login",
+        "loginButton": "form > div > button",
+        "userAgent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:126.0) Gecko/20100101 Firefox/126.0",
+        "cookiesToFind": [
+            "sails.sid"
+        ]
+    }
+}
