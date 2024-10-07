@@ -27,10 +27,8 @@
 
     "authentication": {
         "loginUrl": "https://www.floatplane.com/login",
-        "loginButton": "form > div > button",
+        "completionUrl": "https://www.floatplane.com/",
         "userAgent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:126.0) Gecko/20100101 Firefox/126.0",
-        "cookiesToFind": [
-            "sails.sid"
-        ]
+        "cookiesToFind": [ "sails.sid" ]
     }
 }
