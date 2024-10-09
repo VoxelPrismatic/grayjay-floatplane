@@ -1,0 +1,51 @@
+{
+  "name": "Floatplane",
+  "description": "A content creation and video streaming website created by Floatplane Media Inc. and Linus Media Group.",
+  "author": "VoxelPrismatic",
+  "authorUrl": "https://github.com/voxelprismatic",
+  "platformUrl": "https://floatplane.com",
+  "sourceUrl": "https://voxelprismatic.github.io/grayjay-floatplane/FloatplaneConfig.json",
+  "repositoryUrl": "https://voxelprismatic.github.io/grayjay-floatplane/",
+  "scriptUrl": "./FloatplaneScript.js",
+  "version": 1,
+  "iconUrl": "./floatplane.png",
+  "id": "d8643244-633f-4c71-9f45-215b2387dc2c",
+  "scriptSignature": "bygMTPgJ5guY3P+TWtmz6dxzpv15zGMuwPFB7uxyxCqWH5SgTJ+3t7iGhdWMl6Sb4nI+jlG9p7ED6FrPfO8jDqOiuIp195I4oOF6nKZHXc/KMoQIIJGjxmiP1HS5nPR69OLKCoQxbOWV40lLyCqYOoLK+GbFewVWkgB7CkQ1xOpueBFtGlJDrz3Mrlwg3UF/npJOBFRZ33gDOvDyVKpBSkO/vYDKizrjKRzPZXBi0gKD41m9KVevfs6SzQRZSCmhSr/tUukS3H5Jc7zgSonrUCEwFPJgl7ghP0qDvIAkmpbpDV/4UeiKV6RrrSv65Z09dJCuseO6wTxFv0FrCy6qjznsDtWMET1/Qunrt8OFwHWREwLVsyFSALrwE5DCC31CkBOcFUOkx8w8sz20YOfe5U7XLXC6n/XVujg6zBMp09rPQrmdwqu67cE/54wpYk0H8JFkBcj/yBBnG8giqgNPqkndQrGVdOQ+B6PWwv2THPeL1cT22fyzXY/mF84RWXn6",
+  "scriptPublicKey": "MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEA7Srdosq/fnfN4PvNn5VDcgeSmzcx364pizwFlS+cPBKiW4PawvYdkClmuCPLrTFHc1J6sqcM+6HTp3PSSx3CMbppph6uSqoXdiElQCsKT/NH24qryznexDdUkdX8yxhdLb+u0DqFQ1/1TU6O/V2D87CUD7aeKbIAxlWtu4nYfV0RAqrMfPPskOzNf8Ix1af/P895PbUSipFn5SiQvq/2SKSqKoZOF20+DdQP2I8lYUZh1MIpSuZ/Wm32hHoTXZQNoxqwmsO0nr6le0Mh+T1UxfK0dYYoiNnwB3hQc4H9wgLn6OdJIAAJQcbPlxoP5awxmOHjLAuIX4qmO1bZbFrvJgMRV7o9JsQSxMJyeK2KSGlX/gRs4Nytv0SyQX4Zik3EzF+JApDtjVq1aMowkvNIDBxYgSoa52hJGg1m870vAm3mmk6k2UqzAqbhPgTH08DpRpaRI3xGNy5WF8vHimq73616MDLCnOheSIwZcKDnOU6ZLTg+2//YFZA2K1QLXA39AgMBAAE=",
+  "packages": [
+    "Http"
+  ],
+  "allowEval": false,
+  "allowUrls": [
+    "www.floatplane.com",
+    "floatplane.com"
+  ],
+  "supportedClaimTypes": [
+    1
+  ],
+  "settings": [
+    {
+      "variable": "streamFormat",
+      "name": "Stream format",
+      "description": "This will reduce clutter in the source selector, especially if there are lots of attachments",
+      "type": "Dropdown",
+      "default": "0",
+      "options": [
+        "hls.mpegts",
+        "hls.fmp4",
+        "dash,mpegts",
+        "dash.m4s",
+        "flat"
+      ]
+    }
+  ],
+  "authentication": {
+    "loginUrl": "https://www.floatplane.com/login",
+    "loginButton": "form > div > button",
+    "userAgent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:126.0) Gecko/20100101 Firefox/126.0",
+    "cookiesToFind": [
+      "sails.sid"
+    ],
+    "loginWarning": "This plugin does not support 2FA yet"
+  }
+}
