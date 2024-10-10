@@ -613,9 +613,9 @@ declare class PlatformVideo extends PlatformContent {
 declare interface PlatformVideoDetailsDef extends PlatformVideoDef {
   description: string;
   video: VideoSourceDescriptor | null;
-  dash: DashSource | null;
-  hls: HLSSource | null;
-  live: IVideoSource | null;
+  dash?: DashSource | null;
+  hls?: HLSSource | null;
+  live?: IVideoSource | null;
   rating: RatingLikesDislikes;
   subtitles: ISubtitleSource[];
 }

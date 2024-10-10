@@ -7,10 +7,10 @@
   "sourceUrl": "https://voxelprismatic.github.io/grayjay-floatplane/FloatplaneConfig.json",
   "repositoryUrl": "https://voxelprismatic.github.io/grayjay-floatplane/",
   "scriptUrl": "./FloatplaneScript.js",
-  "version": 1,
+  "version": 2,
   "iconUrl": "./floatplane.png",
   "id": "d8643244-633f-4c71-9f45-215b2387dc2c",
-  "scriptSignature": "bygMTPgJ5guY3P+TWtmz6dxzpv15zGMuwPFB7uxyxCqWH5SgTJ+3t7iGhdWMl6Sb4nI+jlG9p7ED6FrPfO8jDqOiuIp195I4oOF6nKZHXc/KMoQIIJGjxmiP1HS5nPR69OLKCoQxbOWV40lLyCqYOoLK+GbFewVWkgB7CkQ1xOpueBFtGlJDrz3Mrlwg3UF/npJOBFRZ33gDOvDyVKpBSkO/vYDKizrjKRzPZXBi0gKD41m9KVevfs6SzQRZSCmhSr/tUukS3H5Jc7zgSonrUCEwFPJgl7ghP0qDvIAkmpbpDV/4UeiKV6RrrSv65Z09dJCuseO6wTxFv0FrCy6qjznsDtWMET1/Qunrt8OFwHWREwLVsyFSALrwE5DCC31CkBOcFUOkx8w8sz20YOfe5U7XLXC6n/XVujg6zBMp09rPQrmdwqu67cE/54wpYk0H8JFkBcj/yBBnG8giqgNPqkndQrGVdOQ+B6PWwv2THPeL1cT22fyzXY/mF84RWXn6",
+  "scriptSignature": "pTVudYP6CEmTKkjNNDMU4wNIa3j3Ub1iivnhjOxIlxrIx4VpP5bISlHbm6LRJ49/kpWzuF3lL85XYfrgivLLrtUiiChLOW2xmsmbPJg7K+rzZl6CaXFPRqrZODOllmxNHnk3DB/Pxw7OoCi4d8Gj8qUxnf78Ms25KWsbtdFJUwxGElULwlfvorJLfX0wU6y5Uu3XNu3lDIuN0ehKVMqba/2PqQYjX6ybWfS7YX8v1Ynf4/4uqOON/V8YOH3vDwKXGWbOgZU0aev4OmPp325ksaQhclXdfM3Y2VwZzVhBsOtrPmcIo/gPmmlJI12BILZIhmeChF9Qnfn1CNXxwW9uQnq04RVv9MRcpYPAatvUI/nXN4TQwoIseYyOeMJGLQ1A0vVG61ALTnin4iFKwUXMOuyQQ+RE9tQHI4UsrXYcIUwRhvAmqcWnyBIynvWvg5LISAe1QKXR7HuqW2g5Imwb++OZOuoyiDiR2FOVN+fQXsEgtJlQJv/VB7fa/JiypxWN",
   "scriptPublicKey": "MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEA7Srdosq/fnfN4PvNn5VDcgeSmzcx364pizwFlS+cPBKiW4PawvYdkClmuCPLrTFHc1J6sqcM+6HTp3PSSx3CMbppph6uSqoXdiElQCsKT/NH24qryznexDdUkdX8yxhdLb+u0DqFQ1/1TU6O/V2D87CUD7aeKbIAxlWtu4nYfV0RAqrMfPPskOzNf8Ix1af/P895PbUSipFn5SiQvq/2SKSqKoZOF20+DdQP2I8lYUZh1MIpSuZ/Wm32hHoTXZQNoxqwmsO0nr6le0Mh+T1UxfK0dYYoiNnwB3hQc4H9wgLn6OdJIAAJQcbPlxoP5awxmOHjLAuIX4qmO1bZbFrvJgMRV7o9JsQSxMJyeK2KSGlX/gRs4Nytv0SyQX4Zik3EzF+JApDtjVq1aMowkvNIDBxYgSoa52hJGg1m870vAm3mmk6k2UqzAqbhPgTH08DpRpaRI3xGNy5WF8vHimq73616MDLCnOheSIwZcKDnOU6ZLTg+2//YFZA2K1QLXA39AgMBAAE=",
   "packages": [
     "Http"
@@ -37,6 +37,13 @@
         "dash.m4s",
         "flat"
       ]
+    },
+    {
+      "variable": "logLevel",
+      "name": "Toast Logging",
+      "description": "Will log details in toasts",
+      "type": "Boolean",
+      "default": "true"
     }
   ],
   "authentication": {

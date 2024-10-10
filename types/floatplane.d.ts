@@ -1,5 +1,16 @@
 interface FP_Config {
     streamFormat?: string;
+    logLevel?: string;
+}
+
+interface FP_Subscription {
+    startDate: string;
+    endDate: string;
+    paymentID: number;
+    interval: string;
+    paymentCancelled: boolean;
+    plan: FP_SubscriptionPlans;
+    creator: string;
 }
 
 interface FP_Creator {
@@ -165,7 +176,7 @@ interface FP_Delivery {
 }
 
 interface FP_DeliveryGroup {
-    origin: FP_DeliveryOrigin[];
+    origins: FP_DeliveryOrigin[];
     variants: FP_DeliveryVariant[];
 }
 

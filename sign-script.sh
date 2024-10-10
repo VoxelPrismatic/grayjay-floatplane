@@ -3,6 +3,8 @@
 #cat script.js | sign-script.sh
 #sh sign-script.sh script.js
 
+npx rollup -c
+
 #Set your key paths here
 PRIVATE_KEY_PATH=/home/$USER/.ssh/grayjay_rsa
 PUBLIC_KEY_PATH=/home/$USER/.ssh/grayjay_rsa.pub

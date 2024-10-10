@@ -61,6 +61,14 @@ source.disable = () => {
 source.isContentDetailsUrl = (url) => {
     return /^https?:\/\/(www\.)?floatplane\.com\/post\/[\w\d]+$/.test(url);
 };
+source.getHome = function () {
+    let [resp, err] = Fetch(API.USER.SUBSCRIPTIONS, {});
+    if (err) {
+        throw new ScriptException("ScriptException", "Failed to fetch subscriptions: " + err.code);
+    }
+    const pager = new CreatorPager(resp.map(c => c.creator));
+    return pager;
+};
 source.getContentDetails = (url) => {
     const post_id = url.split("/").pop();
     let [r, err] = Fetch(API.CONTENT.POST, { id: post_id });
@@ -85,11 +93,8 @@ source.getContentDetails = (url) => {
             duration: resp.metadata.videoDuration,
             viewCount: resp.likes + resp.dislikes, // TODO: implement view count
             url: PLATFORM_URL + "/post/" + resp.id,
-            live: null,
             isLive: false,
-            dash: null,
-            hls: null,
-            video: null,
+            video: videos,
             rating: new RatingLikesDislikes(resp.likes, resp.dislikes),
             subtitles: []
         });
@@ -119,7 +124,7 @@ function ToGrayjayVideoStream(video_index, group_index, duration, origin, title,
                 bitrate: variant.meta.video?.bitrate.average || 0,
                 duration: duration,
                 url: origin + variant.url,
-                name: `#${video_index}${group_letter}=${variant.meta.video?.height}p - ${title}`
+                name: `#${video_index}${group_letter}=${variant.label} - ${title}`
             });
         case "dash.m4s":
         // fall through
@@ -127,7 +132,7 @@ function ToGrayjayVideoStream(video_index, group_index, duration, origin, title,
             throw new ScriptException("ScriptException", "Dash streams are not implemented (no streams from Floatplane)");
         default:
             return new HLSSource({
-                name: `#${video_index}${group_letter}=${variant.meta.video?.height}p - ${title}`,
+                name: `#${video_index}${group_letter}=${variant.label} - ${title}`,
                 url: origin + variant.url,
                 duration: duration,
                 priority: false
@@ -173,31 +178,109 @@ function ToGrayjayVideoSource(attachments) {
             group_index++;
             if (group.variants.length == 0) {
                 errors.push(`Video ${video_index}:${video.id}:${group_index} has no variants`);
-                bridge.toast(`Video ${video_index}:${video.id}:${group_index} has no variants`);
+                if (settings.logLevel)
+                    bridge.toast(`Video ${video_index}:${video.id}:${group_index} has no variants`);
                 continue;
             }
             for (var variant of group.variants) {
                 if (variant.hidden) {
                     errors.push(`Video ${video_index}:${video.id}:${group_index}:${variant.name} is hidden`);
-                    bridge.toast(`Video ${video_index}:${video.id}:${group_index}:${variant.name} is hidden`);
+                    if (settings.logLevel)
+                        bridge.toast(`Video ${video_index}:${video.id}:${group_index}:${variant.name} is hidden`);
                     continue;
                 }
                 if (!variant.enabled) {
                     errors.push(`Video ${video_index}:${video.id}:${group_index}:${variant.name} is disabled`);
-                    bridge.toast(`Video ${video_index}:${video.id}:${group_index}:${variant.name} is disabled`);
+                    if (settings.logLevel)
+                        bridge.toast(`Video ${video_index}:${video.id}:${group_index}:${variant.name} is disabled`);
                     continue;
                 }
-                videos.push(ToGrayjayVideoStream(video_index, group_index, video.duration, group.origin[0].url, video.title, variant));
+                if (settings.logLevel)
+                    bridge.toast(`SUCCESS: Video ${video_index}:${video.id}:${group_index}:${variant.name}`);
+                try {
+                    videos.push(ToGrayjayVideoStream(video_index, group_index, video.duration, group.origins[0].url, video.title, variant));
+                }
+                catch (err) {
+                    log(ToGrayjayVideoStream(video_index, group_index, video.duration, group.origins[0].url, video.title, variant));
+                    throw err;
+                }
             }
         }
     }
     if (videos.length == 0) {
         throw new ScriptException("ScriptException", "The following errors occurred:\n- " + errors.join("\n- "));
     }
+    log(videos);
     return new VideoSourceDescriptor(videos);
 }
 function ToThumbnails(thumbs) {
     if (thumbs == null)
         return new Thumbnails([]);
     return new Thumbnails([thumbs, ...thumbs.childImages].map((t) => new Thumbnail(t.path, t.height)));
+}
+function ToVideoEntry(blog) {
+    if (blog.metadata.hasVideo) {
+        return new PlatformVideo({
+            id: new PlatformID("Floatplane", blog.id, config.id),
+            name: blog.title,
+            thumbnails: ToThumbnails(blog.thumbnail),
+            description: blog.text,
+            author: new PlatformAuthorLink(new PlatformID("Floatplane", blog.channel.creator + ":" + blog.channel.id, config.id), blog.channel.title, ChannelUrlFromBlog(blog), blog.channel.icon?.path || ""),
+            datetime: Timestamp(blog.releaseDate),
+            uploadDate: Timestamp(blog.releaseDate),
+            duration: blog.metadata.videoDuration,
+            viewCount: blog.likes + blog.dislikes, // Floatplane does not support a view count, so this is a proxy
+            url: PLATFORM_URL + "/post/" + blog.id,
+            isLive: false // TODO: Support live videos
+        });
+    }
+    // TODO: Images
+    // TODO: Audio
+    // TODO: Gallery
+    // throw new ScriptException("ScriptException", "The following blog has no video: " + blog.id);
+    return null;
+}
+class CreatorPager extends ContentPager {
+    _LIMIT = 20;
+    _creators = {};
+    constructor(creators) {
+        super([], true, null);
+        this._creators = {};
+        for (var creator of creators) {
+            this._creators[creator] = {
+                creatorId: creator,
+                blogPostId: null,
+                moreFetchable: true,
+            };
+        }
+    }
+    nextPage() {
+        const params = {
+            limit: this._LIMIT
+        };
+        let n = 0;
+        for (var creator of Object.values(this._creators)) {
+            params[`ids[${n}]`] = creator.creatorId;
+            if (creator.blogPostId) {
+                params[`fetchAfter[${n}][creatorId]`] = creator.creatorId;
+                params[`fetchAfter[${n}][blogPostId]`] = creator.blogPostId;
+                params[`fetchAfter[${n}][moreFetchable]`] = creator.moreFetchable;
+            }
+            n++;
+        }
+        let [resp, err] = Fetch(API.CONTENT.CREATOR.LIST, params);
+        if (err) {
+            log(err);
+            log(params);
+            throw new ScriptException("ScriptException", "Failed to fetch subscriptions: " + err.code);
+        }
+        this.hasMore = false;
+        for (var data of resp.lastElements) {
+            this._creators[data.creatorId] = data;
+            this.hasMore ||= data.moreFetchable;
+        }
+        const ret = resp.blogPosts.map(ToVideoEntry).filter(x => x !== null);
+        this.results = ret;
+        return this;
+    }
 }
