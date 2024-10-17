@@ -2,6 +2,7 @@ let config: Config;
 let settings: FP_Config;
 
 import * as FP from "./Wrapper.ts";
+import * as CryptoJS from "crypto-js";
 
 
 source.setSettings = (sets: FP_Config) => {
@@ -26,7 +27,7 @@ source.isContentDetailsUrl = (url: string) => {
 source.getHome = function() {
     let [resp, err] = FP.Fetch(FP.API.USER.SUBSCRIPTIONS, {});
     if(err) {
-        throw new ScriptException("ScriptException", "Failed to fetch subscriptions: " + err.code);
+        throw new ScriptException("Failed to fetch subscriptions: " + err.code);
     }
 
     const pager = new CreatorPager((resp as FP_Subscription[]).map(c => c.creator));
@@ -38,7 +39,7 @@ source.getContentDetails = (url: string): PlatformVideoDetails => {
 
     let [r, err] = FP.Fetch(FP.API.CONTENT.POST, { id: post_id });
     if(err) {
-        throw new ScriptException("ScriptException", "Failed to fetch post " + post_id + ": " + err.code);
+        throw new ScriptException("Failed to fetch post " + post_id + ": " + err.code);
     }
 
     const resp: FP_Post = r as FP_Post;
@@ -74,18 +75,18 @@ source.getContentDetails = (url: string): PlatformVideoDetails => {
     }
 
     if(resp.metadata.hasAudio) {
-        throw new ScriptException("ScriptException", "Audio content not supported");
+        throw new ScriptException("Audio content not supported");
     }
 
     if(resp.metadata.hasPicture) {
-        throw new ScriptException("ScriptException", "Picture content not supported");
+        throw new ScriptException("Picture content not supported");
     }
 
     if(resp.metadata.hasGallery) {
-        throw new ScriptException("ScriptException", "Gallery content not supported");
+        throw new ScriptException("Gallery content not supported");
     }
 
-    throw new ScriptException("ScriptException", "Content type not supported");
+    throw new ScriptException("Content type not supported");
 }
 
 /** Returns the associated Grayjay stream object */
@@ -99,7 +100,8 @@ function ToGrayjayVideoStream(
 
     switch(settings.streamFormat) {
         case "flat":
-            return new VideoUrlSource({
+            throw new ScriptException("Flat streams are not implemented (possibly encrypted)");
+            /* return new VideoUrlSource({
                 width: variant.meta.video?.width || -1,
                 height: variant.meta.video?.height || -1,
                 container: variant.meta.video?.mimeType || "",
@@ -108,23 +110,58 @@ function ToGrayjayVideoStream(
                 duration: duration,
                 url: origin + variant.url,
                 name: `#${video_index}${group_letter}=${variant.label} - ${title}`
-            });
+            }); */
 
         case "dash.m4s":
             // fall through
         case "dash.mpegts":
-            throw new ScriptException("ScriptException", "Dash streams are not implemented (no streams from Floatplane)");
-
-        default:
-            return new HLSSource({
-                name: `#${video_index}${group_letter}=${variant.label} - ${title}`,
-                url: origin + variant.url,
-                duration: duration,
-                priority: false
-            });
+            throw new ScriptException("Dash streams are not implemented (no streams from Floatplane)");
     }
+
+    const source = new HLSSource({
+        name: `#${video_index}${group_letter}=${variant.label} - ${title}`,
+        url: origin + variant.url,
+        duration: duration,
+        priority: false
+    });
+
+    const enc_key = FP.getHlsToken(origin + variant.url);
+    const executor = new FP.FP_HLS_Executor(origin + variant.url, enc_key)
+
+    source.getRequestExecutor = () => executor;
+
+    // source.getRequestExecutor = () => { return {
+    //     urlPrefix: (origin + variant.url).split("/chunk.m3u8")[0] + "/",
+    //     executeRequest: (url: string, headers: object) => {
+    //         console.log(url);
+    //         log(url);
+    //         if(url.includes(".m3u8?")) {
+    //             FP.pushToQueue(source);
+    //             log(FP.segment_queue);
+    //             return FP.segment_queue[0];
+    //             // const resp = http.GET(url, { ...FP.FP_Headers, ...headers }, true);
+    //             // if(!resp.isOk)
+    //             //     throw new ScriptException("Failed to fetch HLS Playlist: " + resp.code);
+    //             //
+    //             // return resp.body;
+    //         }
+    //         throw new ScriptException("HLS URL: " + url);
+    //     },
+    //     getRequestExecutor: (url: string, headers: object) => {
+    //         throw new ScriptException("HLS GET URL: " + url);
+    //     }
+    // }};
+    return source;
 }
 
+function strToByteArr(str: string): Uint8Array {
+    const buf = new ArrayBuffer(str.length);
+    const bufView = new Uint8Array(buf);
+    for (let i = 0, strLen = str.length; i < strLen; i++) {
+        bufView[i] = str.charCodeAt(i);
+    }
+    return bufView;
+}
 
 /** Returns video streams from an [FP_Post] */
 function ToGrayjayVideoSource(attachments: FP_VideoAttachment[]): VideoSourceDescriptor {
@@ -195,27 +232,18 @@ function ToGrayjayVideoSource(attachments: FP_VideoAttachment[]): VideoSourceDes
 
                 if(settings.logLevel)
                     bridge.toast(`SUCCESS: Video ${video_index}:${video.id}:${group_index}:${variant.name}`);
-                try {
-                    videos.push(ToGrayjayVideoStream(
-                        video_index, group_index,
-                        video.duration, group.origins[0].url,
-                        video.title, variant
-                    ));
-                } catch(err) {
-                    log(ToGrayjayVideoStream(
-                        video_index, group_index,
-                        video.duration, group.origins[0].url,
-                        video.title, variant
-                    ));
-                    throw err;
-                }
 
+                videos.push(ToGrayjayVideoStream(
+                    video_index, group_index,
+                    video.duration, group.origins[0].url,
+                    video.title, variant
+                ));
             }
         }
     }
 
     if(videos.length == 0) {
-        throw new ScriptException("ScriptException", "The following errors occurred:\n- " + errors.join("\n- "));
+        throw new ScriptException("The following errors occurred:\n- " + errors.join("\n- "));
     }
 
     log(videos);
@@ -256,7 +284,7 @@ function ToVideoEntry(blog: FP_Post): PlatformVideo | null {
     // TODO: Images
     // TODO: Audio
     // TODO: Gallery
-    // throw new ScriptException("ScriptException", "The following blog has no video: " + blog.id);
+    // throw new ScriptException("The following blog has no video: " + blog.id);
     return null;
 }
 
@@ -302,7 +330,7 @@ class CreatorPager extends ContentPager {
         if(err) {
             log(err);
             log(params);
-            throw new ScriptException("ScriptException", "Failed to fetch subscriptions: " + err.code);
+            throw new ScriptException("Failed to fetch subscriptions: " + err.code);
         }
 
         this.hasMore = false;

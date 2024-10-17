@@ -24,6 +24,8 @@
     "typescript": "5.4.5"
   },
   "dependencies": {
+    "@types/crypto-js": "^4.2.2",
+    "crypto-js": "^4.2.0",
     "tslib": "^2.7.0"
   }
 }

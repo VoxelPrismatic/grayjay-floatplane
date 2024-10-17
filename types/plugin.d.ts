@@ -7,7 +7,7 @@ declare class ScriptException extends Error {
   message: string;
 
   //If only one parameter is provided, acts as msg
-  constructor(type: string, msg: string) {
+  constructor(type: string, msg?: string) {
     if (arguments.length == 1) {
       super(arguments[0]);
       this.plugin_type = 'ScriptException';
@@ -405,6 +405,7 @@ declare class HLSSource {
   priority: boolean;
   language?: any;
   requestModifier?: any;
+  getRequestExecutor?: any;
 
   constructor(obj: HLSSource) {
     obj = obj ?? {};

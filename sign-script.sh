@@ -23,5 +23,5 @@ SIGNATURE=$(echo -n "$DATA" | openssl dgst -sha512 -sign $PRIVATE_KEY_PATH | bas
 echo "This is your signature: '$SIGNATURE'"
 
 
-cat $CONFIG | jq --arg signature "$SIGNATURE" --arg publicKey "$PUBLIC_KEY_PKCS8" '. + {scriptSignature: $signature, scriptPublicKey: $publicKey}' > temp_config.json && mv temp_config.json $CONFIG
+cat $CONFIG | jq --arg scriptUrl "./build/FloatplaneScript.js" --arg signature "$SIGNATURE" --arg publicKey "$PUBLIC_KEY_PKCS8" '. + {scriptSignature: $signature, scriptPublicKey: $publicKey, scriptUrl: $scriptUrl}' > temp_config.json && mv temp_config.json $CONFIG
 cat $CONFIG | jq --arg scriptUrl "./FloatplaneScript.js" '. + {scriptUrl: $scriptUrl}' > temp_config.json && mv temp_config.json ./build/$CONFIG
