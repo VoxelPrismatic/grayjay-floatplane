@@ -3,7 +3,6 @@
 Using [these][docs] docs
 
 > [!WARNING]
-> This project is currently stalled. See Grayjay[#1071][1071] for details
+> This project is stalled. Floatplane now requires you to prove you are not a bot via Cloudflare, which the Grayjay login screen does not support.
 
 [docs]: https://jman012.github.io/FloatplaneAPIDocs/SwaggerUI-full/
-[1071]: https://github.com/futo-org/grayjay-android/issues/1071
